@@ -1,0 +1,6 @@
+{
+  "name": "Social Media Super App",
+  "description": "Multi-channel social media management dashboard with AI co-producer trend alignment, post schedule visualizer, content creation suite, and a built-in video & image mock editor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
