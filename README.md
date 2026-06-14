@@ -63,9 +63,27 @@ Launch Pad adds product launch checklists + AI launch briefs.
 
 ```env
 GEMINI_API_KEY=your_key_here
+BASIC_AUTH_HTPASSWD=mefworks:$$apr1$$...   # Traefik gate — see below
 ```
 
 Server-side only. Never exposed to the browser.
+
+## Password gate (production)
+
+`visibility.pluginops.pro` is internal-only. **Traefik BasicAuth** runs before traffic hits the app (same pattern as `operations.sovereignstack.pro`).
+
+On Prod-Ops:
+
+```bash
+htpasswd -nb mefworks YOUR_PASSWORD
+# Add to /opt/apps/visibility-machine/.env — escape $ as $$ in the hash:
+# BASIC_AUTH_HTPASSWD=mefworks:$$apr1$$...
+docker compose up -d
+```
+
+Browser prompts once per session. `/health` stays inside the container (not public via Traefik without auth).
+
+**Local dev:** no gate unless you set `BASIC_AUTH_HTPASSWD` and run behind Traefik; `npm run dev` is open on localhost.
 
 ## What's real vs placeholder
 

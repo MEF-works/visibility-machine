@@ -21,6 +21,8 @@ services:
       - "traefik.http.routers.visibility-machine.rule=Host(`visibility.pluginops.pro`)"
       - "traefik.http.routers.visibility-machine.entrypoints=websecure"
       - "traefik.http.routers.visibility-machine.tls.certresolver=le"
+      - "traefik.http.routers.visibility-machine.middlewares=visibility-auth"
+      - "traefik.http.middlewares.visibility-auth.basicauth.users=${BASIC_AUTH_HTPASSWD}"
       - "traefik.http.services.visibility-machine.loadbalancer.server.port=3000"
       - "traefik.docker.network=prod-ops-network"
     healthcheck:
