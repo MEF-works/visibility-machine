@@ -36,6 +36,21 @@ Capture build log → Attach proof → Generate platform drafts → Schedule on 
 → Copy & post manually → Log replies/leads → Track cash → Reuse winners
 ```
 
+### ReUp proof campaign (from mef-story-engine)
+
+Sibling repo `H:\mef-story-engine` holds story evidence (`wp_wc_orders.sql`, `07_CONTENT_ANGLES.md`).
+
+```bash
+python scripts/seed-reup-content.py
+npm run dev
+```
+
+Override story path: `MEF_STORY_ENGINE=H:\mef-story-engine python scripts/seed-reup-content.py`
+
+**Production:** deploy updated `data/visibility-machine.json` or Settings → Import JSON on `visibility.pluginops.pro`.
+
+**GitHub:** [MEF-works/visibility-machine](https://github.com/MEF-works/visibility-machine) — folder on disk is `social-media-super-app`.
+
 Launch Pad adds product launch checklists + AI launch briefs.
 
 ## Data

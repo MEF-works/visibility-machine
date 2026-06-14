@@ -59,7 +59,7 @@ import {
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 const DATA_DIR = path.join(process.cwd(), "data");
 
 initStorage(DATA_DIR);
@@ -199,6 +199,10 @@ Return JSON: { "hook", "body", "cta", "visualSuggestion", "hashtags" }`;
 
 app.get("/api/status", (_req, res) => {
   res.json({ storage: getStorageStatus(), gemini: geminiStatus() });
+});
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({ ok: true, service: "visibility-machine" });
 });
 
 app.get("/api/metrics", (_req, res) => {
