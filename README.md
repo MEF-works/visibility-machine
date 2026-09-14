@@ -1,109 +1,149 @@
 # Visibility Machine
 
-Personal build-in-public command center for launching products, growing awareness, and tracking leads/cash.
+**An operator-focused build-in-public control plane for turning engineering work into proof, reusable content, launches, leads, and measurable follow-up.**
 
-**NO BUILD DIES IN PRIVATE.**
+Visibility Machine is a full-stack application that captures what was built, attaches evidence, generates platform-specific drafts, schedules distribution, tracks launch activity, records leads, and measures whether visibility work produced anything useful.
+
+The interesting part is not social posting. It is the **workflow between engineering output and public proof**.
+
+## What it demonstrates
+
+- **Full-stack TypeScript application** — React/Vite frontend with an Express API bundled for production.
+- **Structured build logs** — captures what changed, why it matters, the pain point, proof, status, and intended outcome.
+- **Proof-aware generation** — AI drafts are grounded in attached evidence and are instructed not to invent missing facts.
+- **Offline-capable behavior** — the application can generate deterministic template drafts when Gemini is not configured.
+- **Artifact handling** — proof uploads are stored and linked back to build-log records.
+- **Launch operations** — launch campaigns, checklists, scheduled dispatches, platform profiles, and lead tracking share one state model.
+- **Import / export** — application state can be backed up and restored rather than trapped in one runtime.
+- **Operational honesty** — incomplete features are identified as incomplete rather than presented as finished automation.
+
+## Core workflow
+
+```text
+engineering work
+      ↓
+capture build log
+      ↓
+attach proof / artifacts
+      ↓
+assess input quality
+      ↓
+generate platform-specific drafts
+      ↓
+review + schedule distribution
+      ↓
+log replies / leads / outcomes
+      ↓
+reuse what worked
+```
+
+## Product surfaces
+
+| Area | Purpose |
+| --- | --- |
+| **Command** | visibility dashboard, activity, launch and outcome metrics |
+| **Capture** | build logs and proof artifacts |
+| **Distribute** | draft generation, dispatch calendar, reuse library |
+| **Launch & Grow** | launch campaigns, lead tracking, growth metrics, angle analysis |
+| **Settings / Backup** | configuration plus import/export of application state |
+
+## Architecture
+
+```text
+React / Vite UI
+      │
+      ▼
+Express application server
+      │
+      ├── build-log API
+      ├── proof / upload API
+      ├── drafts + content-quality logic
+      ├── launch / dispatch API
+      ├── leads + platform profiles
+      └── metrics / settings / backup
+                  │
+                  ├── local application storage
+                  └── optional Gemini client
+```
+
+AI is optional. `GEMINI_API_KEY` enables live generation; without it, the application remains usable with offline draft logic.
+
+## Proof-first generation
+
+The generation layer deliberately treats evidence as part of the input contract. Drafts are expected to reference concrete information from the build log or attached proof rather than generating generic "we shipped something" copy.
+
+The server also scores the strength of the source material before generation. Thin input is surfaced as thin input instead of being silently padded with invented claims.
+
+That pattern is useful beyond content tooling: **AI output becomes more trustworthy when provenance and missing evidence are modeled explicitly.**
 
 ## Run locally
 
+### Requirements
+
+- Node.js 18+
+- npm
+- optional Gemini API key
+
 ```bash
+git clone https://github.com/MEF-works/visibility-machine.git
+cd visibility-machine
 npm install
 cp .env.example .env
-# Optional: set GEMINI_API_KEY in .env
 npm run dev
 ```
 
-Open http://localhost:3000
+Open `http://localhost:3000`.
 
-## Command Deck
-
-| Section | Views |
-|---------|-------|
-| **Command** | Visibility Dashboard — metrics, launches, dispatches, activity |
-| **Capture** | Build Log, Proof Vault (with file upload), Clip Builder |
-| **Distribute** | Post Factory, Dispatch Calendar, Reuse Library |
-| **Launch & Grow** | Launch Pad, Money Board, Growth Tracker, Angle Finder |
-
-## Keyboard shortcuts
-
-- `Ctrl+B` — Build Log
-- `Ctrl+P` — Post Factory
-
-## Workflow
-
-```
-Capture build log → Attach proof → Generate platform drafts → Schedule on calendar
-→ Copy & post manually → Log replies/leads → Track cash → Reuse winners
-```
-
-### ReUp proof campaign (from mef-story-engine)
-
-Sibling repo `H:\mef-story-engine` holds story evidence (`wp_wc_orders.sql`, `07_CONTENT_ANGLES.md`).
-
-```bash
-python scripts/seed-reup-content.py
-npm run dev
-```
-
-Override story path: `MEF_STORY_ENGINE=H:\mef-story-engine python scripts/seed-reup-content.py`
-
-**Production:** deploy updated `data/visibility-machine.json` or Settings → Import JSON on `visibility.pluginops.pro`.
-
-**GitHub:** [MEF-works/visibility-machine](https://github.com/MEF-works/visibility-machine) — folder on disk is `social-media-super-app`.
-
-Launch Pad adds product launch checklists + AI launch briefs.
-
-## Data
-
-- JSON store: `data/visibility-machine.json`
-- Uploads: `data/uploads/`
-- Backup: Settings → Export/Import JSON
-
-## Environment
+Optional:
 
 ```env
 GEMINI_API_KEY=your_key_here
-BASIC_AUTH_HTPASSWD=mefworks:$$apr1$$...   # Traefik gate — see below
 ```
 
-Server-side only. Never exposed to the browser.
+Without a Gemini key, the app runs in offline/template mode.
 
-## Password gate (production)
-
-`visibility.pluginops.pro` is internal-only. **Traefik BasicAuth** runs before traffic hits the app (same pattern as `operations.sovereignstack.pro`).
-
-On Prod-Ops:
+## Build and run
 
 ```bash
-htpasswd -nb mefworks YOUR_PASSWORD
-# Add to /opt/apps/visibility-machine/.env — escape $ as $$ in the hash:
-# BASIC_AUTH_HTPASSWD=mefworks:$$apr1$$...
-docker compose up -d
+npm run build
+npm start
 ```
 
-Browser prompts once per session. `/health` stays inside the container (not public via Traefik without auth).
+The production build compiles the Vite frontend and bundles the Express server.
 
-**Local dev:** no gate unless you set `BASIC_AUTH_HTPASSWD` and run behind Traefik; `npm run dev` is open on localhost.
+## Current capability boundary
 
-## What's real vs placeholder
+| Capability | Status |
+| --- | --- |
+| Build logs and proof records | Implemented |
+| File upload | Implemented |
+| Launch campaigns and checklists | Implemented |
+| Scheduled dispatch records | Implemented |
+| Lead tracking | Implemented |
+| Gemini-assisted drafts and angle analysis | Implemented when configured |
+| Offline template drafts | Implemented |
+| State backup / restore | Implemented |
+| Automatic posting to external social APIs | Not implemented |
+| Final rendered video export from Clip Builder | Not implemented |
 
-| Feature | Status |
-|---------|--------|
-| Build logs, proof, drafts, launches, leads, dispatches | **Real** |
-| File upload (images/video, 50MB) | **Real** |
-| Gemini AI drafts, angle analysis, launch briefs | **Real** with API key; offline templates without |
-| Manual follower growth tracking | **Real** — you enter counts |
-| Platform playbooks | **Real** — static tactical guides |
-| Auto-posting to social APIs | **Not implemented** — copy/paste workflow |
-| Clip Builder video export | **Placeholder** — preview/metadata only |
+## Engineering notes
 
-## Scripts
+A few deliberate choices shape the project:
 
-```bash
-npm run dev      # Dev server
-npm run build    # Production build
-npm start        # Run production
-npm run lint     # TypeScript check
-```
+- **evidence before copy** — proof is part of the workflow, not an afterthought
+- **one operational model** — build, launch, distribution, leads, and metrics stay connected
+- **AI as an optional capability** — the core product does not collapse when the model API is unavailable
+- **explicit limits** — placeholder and manual steps remain labeled instead of being disguised as automation
 
-See [TODO.md](TODO.md) for future work.
+## Stack
+
+- React 19
+- TypeScript
+- Vite
+- Express
+- Multer
+- Google Gemini API, optional
+- Tailwind CSS
+- Motion
+
+Built by [MEF-works](https://github.com/MEF-works).
